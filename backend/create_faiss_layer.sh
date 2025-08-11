@@ -12,7 +12,7 @@ cd faiss-layer/python
 
 # Install FAISS with specific versions for Lambda compatibility
 echo "📦 Installing FAISS and dependencies..."
-pip install faiss-cpu==1.7.4 numpy==1.21.6 -t .
+pip3 install faiss-cpu numpy -t .
 
 # Clean up to reduce layer size
 echo "🧹 Cleaning up package..."
