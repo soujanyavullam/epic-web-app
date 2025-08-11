@@ -62,7 +62,7 @@ const useBooks = (): UseBooksReturn => {
       }
 
       // Fallback to direct fetch if API client fails
-      const response = await fetch('https://0108izew87.execute-api.us-east-1.amazonaws.com/dev/books', {
+      const response = await fetch('https://0108izew87.execute-api.us-east-1.amazonaws.com/dev/query/books', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

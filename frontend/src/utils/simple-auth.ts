@@ -18,40 +18,83 @@ export interface AuthUser {
 }
 
 export const getCurrentUser = (): CognitoUser | null => {
-  return userPool.getCurrentUser();
+  try {
+    const user = userPool.getCurrentUser();
+    if (user) {
+      console.log('Current user found:', user.getUsername());
+    } else {
+      console.log('No current user found');
+    }
+    return user;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
 };
 
 export const getAuthToken = (): Promise<string | null> => {
-  return new Promise((resolve, reject) => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      resolve(null);
-      return;
-    }
-
-    currentUser.getSession((err: any, session: any) => {
-      if (err) {
-        console.error('Error getting session:', err);
-        reject(err);
-      } else if (session && session.isValid()) {
-        resolve(session.getIdToken().getJwtToken());
-      } else {
+  return new Promise((resolve) => {
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        console.log('No current user found, no token available');
         resolve(null);
+        return;
       }
-    });
+
+      currentUser.getSession((err: any, session: any) => {
+        if (err) {
+          console.error('Error getting session:', err);
+          resolve(null);
+        } else if (session && session.isValid()) {
+          const token = session.getIdToken().getJwtToken();
+          console.log('Valid token found');
+          resolve(token);
+        } else {
+          console.log('No valid session found');
+          resolve(null);
+        }
+      });
+    } catch (error) {
+      console.error('Error in getAuthToken:', error);
+      resolve(null);
+    }
   });
 };
 
-export const isAuthenticated = (): Promise<boolean> => {
-  return getAuthToken().then(token => !!token);
+export const isAuthenticated = async (): Promise<boolean> => {
+  try {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      console.log('No current user found, not authenticated');
+      return false;
+    }
+
+    const token = await getAuthToken();
+    if (!token) {
+      console.log('No valid token found, not authenticated');
+      return false;
+    }
+
+    console.log('User is authenticated with valid token');
+    return true;
+  } catch (error) {
+    console.error('Error checking authentication status:', error);
+    return false;
+  }
 };
 
 export const logout = async (): Promise<void> => {
   try {
     console.log('Starting enhanced logout process...');
     
-    // 1. Get current auth token
-    const token = await getAuthToken();
+    // 1. Get current auth token before clearing user
+    let token: string | null = null;
+    try {
+      token = await getAuthToken();
+    } catch (error) {
+      console.log('No valid token found, proceeding with logout');
+    }
     
     // 2. Call backend logout handler if token exists
     if (token) {
@@ -76,62 +119,30 @@ export const logout = async (): Promise<void> => {
       }
     }
     
-    // 3. Sign out from Cognito
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-      await new Promise<void>((resolve, reject) => {
-        currentUser.signOut((err) => {
-          if (err) {
-            console.error('Cognito signOut error:', err);
-            reject(err);
-          } else {
-            console.log('Cognito signOut successful');
-            resolve();
-          }
-        });
-      });
-    }
+    // 3. Safely clear all authentication state first
+    safeClearAuth();
     
-    // 4. Clear all storage
-    const storageKeys = [
-      'cognito-token',
-      'aws.cognito.identity-id',
-      'api_key',
-      'user_info',
-      'auth_token',
-      'cognitoUserPool',
-      'cognitoUser'
-    ];
-    
-    storageKeys.forEach(key => {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    });
-    
-    // 5. Clear any Cognito-related keys
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.includes('cognito') || key.includes('aws') || key.includes('auth'))) {
-        localStorage.removeItem(key);
+    // 4. Try to sign out from Cognito (but don't fail if it errors)
+    try {
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        console.log('Signing out from Cognito...');
+        currentUser.signOut();
+        console.log('Cognito signOut called successfully');
       }
-    }
-    
-    // 6. Clear sessionStorage as well
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      if (key && (key.includes('cognito') || key.includes('aws') || key.includes('auth'))) {
-        sessionStorage.removeItem(key);
-      }
+    } catch (error) {
+      console.warn('Error during Cognito signOut, continuing with logout:', error);
     }
     
     console.log('Enhanced logout completed successfully');
     
-    // 7. Force page reload to clear all state
+    // 5. Force page reload to clear all state
     window.location.reload();
     
   } catch (error) {
     console.error('Error during enhanced logout:', error);
     // Force logout even if there's an error
+    safeClearAuth();
     window.location.reload();
   }
 };
@@ -169,11 +180,27 @@ export const authenticatedFetch = async (
 export const getUserInfo = async (): Promise<AuthUser | null> => {
   try {
     const currentUser = getCurrentUser();
-    if (!currentUser) return null;
+    if (!currentUser) {
+      console.log('No current user found, returning null');
+      return null;
+    }
+
+    // Check if user has a valid session before calling getUserAttributes
+    try {
+      const token = await getAuthToken();
+      if (!token) {
+        console.log('No valid session found, user may be signed out');
+        return null;
+      }
+    } catch (error) {
+      console.log('Error checking session, user may be signed out');
+      return null;
+    }
 
     return new Promise((resolve, reject) => {
       currentUser.getUserAttributes((err, attributes) => {
         if (err) {
+          console.error('Error getting user attributes:', err);
           reject(err);
           return;
         }
@@ -196,6 +223,7 @@ export const getUserInfo = async (): Promise<AuthUser | null> => {
 
           resolve(userInfo);
         } else {
+          console.log('No user attributes found');
           resolve(null);
         }
       });
@@ -256,4 +284,79 @@ export const registerUser = async (email: string, password: string, name: string
       }
     });
   });
+};
+
+// Confirm registration with verification code
+export const confirmRegistration = async (email: string, code: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const cognitoUser = new CognitoUser({
+      Username: email,
+      Pool: userPool,
+    });
+
+    cognitoUser.confirmRegistration(code, true, (err, result) => {
+      if (err) {
+        console.error('Confirmation failed:', err);
+        reject(err);
+      } else {
+        console.log('Confirmation successful:', result);
+        resolve(result);
+      }
+    });
+  });
+};
+
+// Safe function to clear all authentication state without triggering errors
+export const safeClearAuth = (): void => {
+  try {
+    console.log('Safely clearing all authentication state...');
+    
+    // Clear all storage
+    const storageKeys = [
+      'cognito-token',
+      'aws.cognito.identity-id',
+      'api_key',
+      'user_info',
+      'auth_token',
+      'cognitoUserPool',
+      'cognitoUser'
+    ];
+    
+    storageKeys.forEach(key => {
+      try {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      } catch (error) {
+        console.warn(`Error removing storage key ${key}:`, error);
+      }
+    });
+    
+    // Clear any Cognito-related keys
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      try {
+        const key = localStorage.key(i);
+        if (key && (key.includes('cognito') || key.includes('aws') || key.includes('auth'))) {
+          localStorage.removeItem(key);
+        }
+      } catch (error) {
+        console.warn('Error clearing localStorage key:', error);
+      }
+    }
+    
+    // Clear sessionStorage as well
+    for (let i = sessionStorage.length - 1; i >= 0; i--) {
+      try {
+        const key = sessionStorage.key(i);
+        if (key && (key.includes('cognito') || key.includes('aws') || key.includes('auth'))) {
+          sessionStorage.removeItem(key);
+        }
+      } catch (error) {
+        console.warn('Error clearing sessionStorage key:', error);
+      }
+    }
+    
+    console.log('Authentication state cleared successfully');
+  } catch (error) {
+    console.error('Error clearing authentication state:', error);
+  }
 }; 

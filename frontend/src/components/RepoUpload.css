@@ -104,6 +104,9 @@
 .loading-container {
   text-align: center;
   margin: 1.5rem 0;
+  background: transparent;
+  padding: 1rem;
+  border-radius: 8px;
 }
 
 .loading-spinner {
@@ -125,6 +128,9 @@
   color: #666;
   font-size: 0.9rem;
   margin: 0;
+  background: transparent;
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 
 .upload-button {
@@ -152,6 +158,19 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+.upload-button:focus {
+  outline: none;
+  background: #e1e8ed;
+  color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.upload-button:active {
+  background: #e1e8ed;
+  color: #2c3e50;
+  transform: none;
 }
 
 .repo-upload-info {

@@ -6,17 +6,6 @@ interface RepoUploadProps {
   onUploadSuccess?: (bookTitle: string) => void;
 }
 
-interface UploadResponse {
-  message: string;
-  github_url: string;
-  owner: string;
-  repo: string;
-  book_title: string;
-  s3_key: string;
-  chunks_processed: number;
-  documentation_length: number;
-}
-
 const RepoUpload: React.FC<RepoUploadProps> = ({ onUploadSuccess }) => {
   const [githubUrl, setGithubUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);

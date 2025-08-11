@@ -12,7 +12,7 @@ const BookSelector: React.FC<BookSelectorProps> = ({ selectedBook, onBookSelect 
   if (loading) {
     return (
       <div className="book-selector">
-        <label>Select:</label>
+        <label>Select the context:</label>
         <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
           Loading books...
         </div>
@@ -54,7 +54,7 @@ const BookSelector: React.FC<BookSelectorProps> = ({ selectedBook, onBookSelect 
   return (
     <div className="book-selector">
       <label htmlFor="book-select">
-        Select a Book:
+        Select the context:
       </label>
       <select
         id="book-select"

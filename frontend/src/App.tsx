@@ -4,8 +4,9 @@ import BookUpload from './components/BookUpload';
 import RepoUpload from './components/RepoUpload';
 import Auth from './components/Auth';
 import { isAuthenticated as checkAuth, getUserInfo, logout } from './utils/simple-auth';
-import { debugAuthStatus } from './utils/auth-debug';
-import { testBooksAPI } from './utils/api-test';
+// Debug imports - commented out since debug buttons are hidden
+// import { debugAuthStatus } from './utils/auth-debug';
+// import { testBooksAPI } from './utils/api-test';
 import './App.css';
 
 function App() {
@@ -30,16 +31,23 @@ function App() {
       setIsAuthenticated(authenticated);
       
       if (authenticated) {
-        // Get user info including full name
-        const userInfo = await getUserInfo();
-        if (userInfo?.name) {
-          setUserFullName(userInfo.name);
+        // Get user info including full name, but don't fail if it errors
+        try {
+          const userInfo = await getUserInfo();
+          if (userInfo?.name) {
+            setUserFullName(userInfo.name);
+          }
+        } catch (error) {
+          console.error('Error getting user info during auth check:', error);
+          // Continue with authentication even if getUserInfo fails
+          setUserFullName('');
         }
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       // If auth check fails, assume not authenticated and show login
       setIsAuthenticated(false);
+      setUserFullName('');
     } finally {
       setLoading(false);
     }
@@ -49,8 +57,8 @@ function App() {
     setIsAuthenticated(authenticated);
     setUser(user);
     
-    if (authenticated) {
-      // Get user info including full name
+    if (authenticated && user) {
+      // Only try to get user info if we're authenticated and have a user
       try {
         const userInfo = await getUserInfo();
         if (userInfo?.name) {
@@ -58,6 +66,8 @@ function App() {
         }
       } catch (error) {
         console.error('Error getting user info:', error);
+        // Don't fail the auth state change if getUserInfo fails
+        setUserFullName('');
       }
     } else {
       setUserFullName('');
@@ -67,10 +77,15 @@ function App() {
   const handleLogout = () => {
     try {
       console.log('Logging out user...');
-      logout(); // Sign out from Cognito
-      setIsAuthenticated(false);
-      setUser(null);
+      
+      // Clear user info first to prevent getUserInfo errors
       setUserFullName('');
+      setUser(null);
+      setIsAuthenticated(false);
+      
+      // Then call the actual logout function
+      logout(); // Sign out from Cognito
+      
       setCurrentPage('qa'); // Reset to default page
       console.log('Logout completed successfully');
     } catch (error) {
@@ -83,6 +98,8 @@ function App() {
     }
   };
 
+  // Debug functions - commented out since debug buttons are hidden
+  /*
   const handleDebugAuth = async () => {
     console.log('🔍 Debugging authentication...');
     await debugAuthStatus();
@@ -96,6 +113,7 @@ function App() {
       console.error('API test failed:', error);
     }
   };
+  */
 
   const handleRepoUploadSuccess = (bookTitle: string) => {
     // Switch to Q&A page after successful repository upload
@@ -156,7 +174,7 @@ function App() {
               Logout
             </button>
             {/* Temporary debug buttons - remove in production */}
-            <button 
+            {/* <button 
               className="debug-btn"
               onClick={handleDebugAuth}
               style={{ 
@@ -187,7 +205,7 @@ function App() {
               }}
             >
               Test API
-            </button>
+            </button> */}
           </div>
         </div>
       </nav>

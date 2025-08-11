@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { uploadBook } from '../utils/api-client';
+import { safeBase64Encode } from '../utils/base64';
 import './BookUpload.css';
 
 interface BookUploadProps {
@@ -43,11 +44,13 @@ const BookUpload: React.FC<BookUploadProps> = ({ onUploadSuccess }) => {
       reader.onload = async (event) => {
         try {
           const content = event.target?.result as string;
-          const base64Content = btoa(content);
+          
+          // Use proper Unicode-safe base64 encoding
+          const base64Content = safeBase64Encode(content);
 
           const bookData = {
             filename: file.name,
-            content: base64Content,
+            file_content: base64Content,
             content_type: file.type || 'text/plain'
           };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { loginUser, registerUser, getCurrentUser, logout } from '../utils/simple-auth';
+import { loginUser, registerUser, confirmRegistration, getCurrentUser, logout } from '../utils/simple-auth';
 import './Auth.css';
 
 interface AuthProps {
@@ -8,9 +8,11 @@ interface AuthProps {
 
 const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,11 +22,39 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
 
   useEffect(() => {
     // Check if user is already authenticated
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-      setIsAuthenticated(true);
-      setUser(currentUser);
-      onAuthStateChange(true, currentUser);
+    try {
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        // Verify the user has a valid session before setting as authenticated
+        currentUser.getSession((err: any, session: any) => {
+          if (err) {
+            console.log('Error getting session for existing user:', err);
+            setIsAuthenticated(false);
+            setUser(null);
+            onAuthStateChange(false);
+          } else if (session && session.isValid()) {
+            console.log('Valid session found for existing user');
+            setIsAuthenticated(true);
+            setUser(currentUser);
+            onAuthStateChange(true, currentUser);
+          } else {
+            console.log('No valid session for existing user');
+            setIsAuthenticated(false);
+            setUser(null);
+            onAuthStateChange(false);
+          }
+        });
+      } else {
+        console.log('No existing user found');
+        setIsAuthenticated(false);
+        setUser(null);
+        onAuthStateChange(false);
+      }
+    } catch (error) {
+      console.error('Error checking existing user:', error);
+      setIsAuthenticated(false);
+      setUser(null);
+      onAuthStateChange(false);
     }
   }, [onAuthStateChange]);
 
@@ -62,21 +92,59 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
     try {
       await registerUser(email, password, name);
       setError('');
-      setIsLogin(true);
-      alert('Registration successful! Please check your email for verification.');
+      setIsVerifying(true);
+      alert('Registration successful! Please check your email for verification code and enter it below.');
     } catch (err) {
       throw err;
     }
   };
 
+  const handleVerification = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      await confirmRegistration(email, verificationCode);
+      setError('');
+      setIsVerifying(false);
+      setIsLogin(true);
+      alert('Email verified successfully! You can now login.');
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
-    logout();
-    setIsAuthenticated(false);
-    setUser(null);
-    onAuthStateChange(false);
-    setEmail('');
-    setPassword('');
-    setName('');
+    try {
+      console.log('Auth component: Logging out user...');
+      
+      // Clear local state first
+      setIsAuthenticated(false);
+      setUser(null);
+      
+      // Then call the logout function
+      logout();
+      
+      // Clear form fields
+      setEmail('');
+      setPassword('');
+      setName('');
+      
+      // Notify parent component
+      onAuthStateChange(false);
+      
+      console.log('Auth component: Logout completed successfully');
+    } catch (error) {
+      console.error('Auth component: Error during logout:', error);
+      // Force logout even if there's an error
+      setIsAuthenticated(false);
+      setUser(null);
+      setEmail('');
+      setPassword('');
+      setName('');
+      onAuthStateChange(false);
+    }
   };
 
   if (isAuthenticated) {
@@ -91,6 +159,59 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           >
             Logout
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isVerifying) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2>Verify Your Email</h2>
+          <p>We sent a verification code to: <strong>{email}</strong></p>
+          <p>Please check your email and enter the code below:</p>
+          
+          <form onSubmit={(e) => { e.preventDefault(); handleVerification(); }} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="verificationCode">Verification Code</label>
+              <input
+                type="text"
+                id="verificationCode"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                required
+                placeholder="Enter verification code"
+                maxLength={6}
+              />
+            </div>
+            
+            {error && <div className="error-message">{error}</div>}
+            
+            <button 
+              type="submit" 
+              className="auth-button"
+              disabled={loading || !verificationCode.trim()}
+            >
+              {loading ? 'Verifying...' : 'Verify Email'}
+            </button>
+          </form>
+          
+          <div className="auth-toggle">
+            <p>
+              <button 
+                className="toggle-button"
+                onClick={() => {
+                  setIsVerifying(false);
+                  setIsLogin(true);
+                  setError('');
+                  setVerificationCode('');
+                }}
+              >
+                Back to Login
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     );

@@ -81,7 +81,7 @@ export const queryBook = async (question: string, bookTitle: string) => {
 };
 
 export const listBooks = async () => {
-  return apiRequest('/books', 'GET');
+  return apiRequest('/query/books', 'GET');
 };
 
 export const uploadBook = async (bookData: any) => {

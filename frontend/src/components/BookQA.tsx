@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import BookSelector from './BookSelector';
 import QuestionForm from './QuestionForm';
 import AnswerDisplay from './AnswerDisplay';
-import LoadingSpinner from './LoadingSpinner';
 import { queryBook } from '../utils/api-client';
 import './BookQA.css';
 
@@ -12,10 +11,15 @@ interface Answer {
 
 const BookQA: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<string>('');
-  const [question, setQuestion] = useState<string>('');
   const [answer, setAnswer] = useState<Answer | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+
+  const handleBookSelect = (bookTitle: string) => {
+    setSelectedBook(bookTitle);
+    setAnswer(null);
+    setError('');
+  };
 
   const handleQuestionSubmit = async (questionText: string) => {
     if (!selectedBook) {
@@ -28,11 +32,11 @@ const BookQA: React.FC = () => {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      setError('');
-      setAnswer(null);
+    setLoading(true);
+    setError('');
+    setAnswer(null);
 
+    try {
       console.log('Submitting question:', { question: questionText, book_title: selectedBook });
       
       const response = await queryBook(questionText, selectedBook);
@@ -46,14 +50,8 @@ const BookQA: React.FC = () => {
       console.error('Error submitting question:', err);
       setError(err instanceof Error ? err.message : 'Failed to get answer. Please try again.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
-
-  const handleBookSelect = (bookTitle: string) => {
-    setSelectedBook(bookTitle);
-    setAnswer(null);
-    setError('');
   };
 
   return (
@@ -78,17 +76,16 @@ const BookQA: React.FC = () => {
 
         <QuestionForm 
           onSubmit={handleQuestionSubmit}
-          disabled={isLoading || !selectedBook}
+          disabled={loading || !selectedBook}
         />
 
-        {isLoading && (
+        {loading && (
           <div className="loading-spinner">
             <div className="spinner"></div>
-            <p className="loading-message">Processing your question...</p>
           </div>
         )}
 
-        {answer && !isLoading && (
+        {answer && !loading && (
           <AnswerDisplay answer={answer} />
         )}
       </div>

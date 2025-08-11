@@ -14,7 +14,7 @@ const TestUI: React.FC = () => {
           </div>
           <div className="book-qa-content">
             <div className="book-selector">
-              <label>Select:</label>
+              <label>Select the context:</label>
               <select>
                 <option value="">Choose a book...</option>
                 <option value="test">Test Book</option>
