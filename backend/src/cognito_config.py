@@ -1,0 +1,3 @@
+# Cognito Configuration
+USER_POOL_ID = 'us-east-1_8d5MmHizq'
+REGION = 'us-east-1'

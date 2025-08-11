@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Logout Handler Lambda Function for Epic Library'
+
+Parameters:
+  UserPoolId:
+    Type: String
+    Default: 'us-east-1_8d5MmHizq'
+    Description: 'Cognito User Pool ID'
+
+Resources:
+  # IAM Role for Lambda
+  LogoutHandlerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: epic-logout-function-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CognitoLogoutPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminUserGlobalSignOut
+                  - cognito-idp:AdminGetUser
+                Resource: !Sub 'arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}'
+
+  # Lambda Function
+  LogoutHandlerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: epic-logout-function
+      Runtime: python3.9
+      Handler: logout_handler.lambda_handler
+      Role: !GetAtt LogoutHandlerRole.Arn
+      Timeout: 30
+      MemorySize: 256
+      Description: 'Logout handler for Epic Library application'
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref UserPoolId
+          REGION: !Ref AWS::Region
+      Code:
+        ZipFile: |
+          import json
+          def lambda_handler(event, context):
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({'message': 'Placeholder function - deploy actual code'})
+              }
+
+  # API Gateway Resource (if you want to create it here)
+  LogoutApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: logout
+
+  LogoutApiMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !Ref LogoutApiResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LogoutHandlerFunction.Arn}/invocations'
+
+  # Lambda Permission for API Gateway
+  LogoutLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LogoutHandlerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGatewayRestApi}/*/POST/logout'
+
+  # OPTIONS method for CORS
+  LogoutOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !Ref LogoutApiResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Responses:
+          default:
+            StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,Origin,X-Requested-With'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
+              method.response.header.Access-Control-Allow-Credentials: "'true'"
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+
+# Outputs
+Outputs:
+  LogoutHandlerFunctionArn:
+    Description: 'ARN of the Logout Handler Lambda Function'
+    Value: !GetAtt LogoutHandlerFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-LogoutHandlerFunctionArn'
+
+  LogoutHandlerFunctionName:
+    Description: 'Name of the Logout Handler Lambda Function'
+    Value: !Ref LogoutHandlerFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-LogoutHandlerFunctionName'
+
+  LogoutApiUrl:
+    Description: 'URL for the logout API endpoint'
+    Value: !Sub 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/logout'
+    Export:
+      Name: !Sub '${AWS::StackName}-LogoutApiUrl' 

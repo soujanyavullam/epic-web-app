@@ -1,0 +1,1 @@
+from query_handler import lambda_handler 

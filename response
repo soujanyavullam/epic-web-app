@@ -1,0 +1,156 @@
+{
+    "events": [
+        {
+            "timestamp": 1749039782799,
+            "message": "INIT_START Runtime Version: python:3.9.v94\tRuntime Version ARN: arn:aws:lambda:us-east-1::runtime:b0187a72e2a0474a536ecdeed24a9131d82aa650b5a85f12efc5c2b09011a8b5\n",
+            "ingestionTime": 1749039783534
+        },
+        {
+            "timestamp": 1749039783434,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039783534
+        },
+        {
+            "timestamp": 1749039783475,
+            "message": "INIT_REPORT Init Duration: 676.07 ms\tPhase: init\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039783534
+        },
+        {
+            "timestamp": 1749039787971,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039788432
+        },
+        {
+            "timestamp": 1749039788410,
+            "message": "INIT_REPORT Init Duration: 4901.69 ms\tPhase: invoke\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039788432
+        },
+        {
+            "timestamp": 1749039788410,
+            "message": "START RequestId: c886e0f0-3bb3-43b5-81a6-9d659b4be93b Version: $LATEST\n",
+            "ingestionTime": 1749039788432
+        },
+        {
+            "timestamp": 1749039788431,
+            "message": "Unknown application error occurred\nRuntime.ImportModuleError\n",
+            "ingestionTime": 1749039788432
+        },
+        {
+            "timestamp": 1749039788431,
+            "message": "END RequestId: c886e0f0-3bb3-43b5-81a6-9d659b4be93b\n",
+            "ingestionTime": 1749039788432
+        },
+        {
+            "timestamp": 1749039788431,
+            "message": "REPORT RequestId: c886e0f0-3bb3-43b5-81a6-9d659b4be93b\tDuration: 4938.63 ms\tBilled Duration: 4939 ms\tMemory Size: 256 MB\tMax Memory Used: 26 MB\t\nXRAY TraceId: 1-68403aa6-1ac60eff62aa92cc00ed4c6d\tSegmentId: 2a6330f03f270c1e\tSampled: true\t\n",
+            "ingestionTime": 1749039788432
+        },
+        {
+            "timestamp": 1749039788457,
+            "message": "INIT_START Runtime Version: python:3.9.v94\tRuntime Version ARN: arn:aws:lambda:us-east-1::runtime:b0187a72e2a0474a536ecdeed24a9131d82aa650b5a85f12efc5c2b09011a8b5\n",
+            "ingestionTime": 1749039789103
+        },
+        {
+            "timestamp": 1749039789057,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039789103
+        },
+        {
+            "timestamp": 1749039789101,
+            "message": "INIT_REPORT Init Duration: 643.85 ms\tPhase: init\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039789103
+        },
+        {
+            "timestamp": 1749039799993,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039800489
+        },
+        {
+            "timestamp": 1749039800454,
+            "message": "INIT_REPORT Init Duration: 4870.67 ms\tPhase: invoke\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039800489
+        },
+        {
+            "timestamp": 1749039800454,
+            "message": "START RequestId: 4800fb92-4cd2-4bf3-8d6a-ea1eadd1bd9a Version: $LATEST\n",
+            "ingestionTime": 1749039800489
+        },
+        {
+            "timestamp": 1749039800471,
+            "message": "Unknown application error occurred\nRuntime.ImportModuleError\n",
+            "ingestionTime": 1749039800489
+        },
+        {
+            "timestamp": 1749039800471,
+            "message": "END RequestId: 4800fb92-4cd2-4bf3-8d6a-ea1eadd1bd9a\n",
+            "ingestionTime": 1749039800489
+        },
+        {
+            "timestamp": 1749039800471,
+            "message": "REPORT RequestId: 4800fb92-4cd2-4bf3-8d6a-ea1eadd1bd9a\tDuration: 4887.23 ms\tBilled Duration: 4888 ms\tMemory Size: 256 MB\tMax Memory Used: 26 MB\t\nXRAY TraceId: 1-68403ab3-0e6070971567b2fa6cb788dd\tSegmentId: 39f2e88912228cb5\tSampled: true\t\n",
+            "ingestionTime": 1749039800489
+        },
+        {
+            "timestamp": 1749039800508,
+            "message": "INIT_START Runtime Version: python:3.9.v94\tRuntime Version ARN: arn:aws:lambda:us-east-1::runtime:b0187a72e2a0474a536ecdeed24a9131d82aa650b5a85f12efc5c2b09011a8b5\n",
+            "ingestionTime": 1749039801120
+        },
+        {
+            "timestamp": 1749039801080,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039801120
+        },
+        {
+            "timestamp": 1749039801117,
+            "message": "INIT_REPORT Init Duration: 609.46 ms\tPhase: init\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039801120
+        },
+        {
+            "timestamp": 1749039839893,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039840410
+        },
+        {
+            "timestamp": 1749039840390,
+            "message": "INIT_REPORT Init Duration: 4882.12 ms\tPhase: invoke\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039840410
+        },
+        {
+            "timestamp": 1749039840390,
+            "message": "START RequestId: defc5a86-06b8-42d3-928a-d0a524be3812 Version: $LATEST\n",
+            "ingestionTime": 1749039840410
+        },
+        {
+            "timestamp": 1749039840391,
+            "message": "Unknown application error occurred\nRuntime.ImportModuleError\n",
+            "ingestionTime": 1749039840410
+        },
+        {
+            "timestamp": 1749039840391,
+            "message": "END RequestId: defc5a86-06b8-42d3-928a-d0a524be3812\n",
+            "ingestionTime": 1749039840410
+        },
+        {
+            "timestamp": 1749039840391,
+            "message": "REPORT RequestId: defc5a86-06b8-42d3-928a-d0a524be3812\tDuration: 4882.95 ms\tBilled Duration: 4883 ms\tMemory Size: 256 MB\tMax Memory Used: 26 MB\t\nXRAY TraceId: 1-68403adb-28429c0a61d4af4c4dd32fea\tSegmentId: 190448f6585fcf81\tSampled: true\t\n",
+            "ingestionTime": 1749039840410
+        },
+        {
+            "timestamp": 1749039840427,
+            "message": "INIT_START Runtime Version: python:3.9.v94\tRuntime Version ARN: arn:aws:lambda:us-east-1::runtime:b0187a72e2a0474a536ecdeed24a9131d82aa650b5a85f12efc5c2b09011a8b5\n",
+            "ingestionTime": 1749039840433
+        },
+        {
+            "timestamp": 1749039841019,
+            "message": "[ERROR] Runtime.ImportModuleError: Unable to import module 'query_handler': Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.\nTraceback (most recent call last):",
+            "ingestionTime": 1749039841065
+        },
+        {
+            "timestamp": 1749039841062,
+            "message": "INIT_REPORT Init Duration: 634.70 ms\tPhase: init\tStatus: error\tError Type: Runtime.ImportModuleError\n",
+            "ingestionTime": 1749039841065
+        }
+    ],
+    "nextForwardToken": "f/39004891837602160737525911241587493083411443738437025793/s",
+    "nextBackwardToken": "b/39004890538293843235536215076740950491825099535161294848/s"
+}

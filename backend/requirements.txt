@@ -1,0 +1,12 @@
+boto3>=1.26.0
+langchain>=0.0.267
+numpy>=1.21.0
+openai>=0.27.0
+python-dotenv>=0.19.0
+requests>=2.28.0
+pydantic>=1.10.0
+fastapi>=0.95.0
+uvicorn>=0.22.0
+python-multipart>=0.0.6
+PyJWT>=2.8.0
+cryptography>=3.4.0 

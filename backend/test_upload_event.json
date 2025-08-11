@@ -1,0 +1,7 @@
+{
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"filename\":\"test-book.txt\",\"content\":\"This is a test book content for S3 Vectors testing.\"}"
+} 
