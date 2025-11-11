@@ -94,6 +94,7 @@ epic-web-app/
 │
 ├── deployment/                 # Deployment scripts
 ├── docs/                       # Additional documentation
+├── publications/               # Conference papers and presentations
 └── README.md                   # This file
 ```
 
@@ -320,13 +321,25 @@ aws lambda update-function-code \
 - **CORS**: Properly configured cross-origin resource sharing
 - **IAM**: Least privilege access policies
 
+## 📄 Publications & Presentations
+
+This project has been presented at **AI4 2025**. For papers, presentations, and related materials, see the [publications directory](publications/).
+
+- 📄 **Conference Paper**: [Building Enterprise Grade AI Systems Solo with LLMs and AWS](publications/paper.pdf)
+- 🎤 **Conference Presentation**: [AI4 2025 PowerPoint Presentation](publications/presentation.pptx)
+- 📚 **Citation Information**: See [publications/README.md](publications/README.md) for citation details
+
 ## 📚 Additional Documentation
 
-- [Full Documentation](EPIC_WEB_APP_DOCUMENTATION.md) - Comprehensive system documentation
-- [Architecture Diagram](ARCHITECTURE_DIAGRAM.md) - Detailed architecture diagrams
-- [Authentication Setup](AUTHENTICATION_SETUP.md) - Cognito configuration guide
-- [Quick Start Guide](QUICK_START.md) - 5-minute setup guide
-- [Security Guide](SECURITY_GUIDE.md) - Security best practices
+- [Full Documentation](docs/EPIC_WEB_APP_DOCUMENTATION.md) - Comprehensive system documentation
+- [Architecture Diagram](docs/ARCHITECTURE_DIAGRAM.md) - Detailed architecture diagrams
+- [Authentication Setup](docs/AUTHENTICATION_SETUP.md) - Cognito configuration guide
+- [Quick Start Guide](docs/QUICK_START.md) - 5-minute setup guide
+- [Security Guide](docs/SECURITY_GUIDE.md) - Security best practices
+- [Logout Handler Deployment](docs/LOGOUT_HANDLER_DEPLOYMENT.md) - Logout handler setup guide
+- [Manual Cognito Setup](docs/manual-cognito-setup.md) - Manual Cognito configuration
+- [Fix Cognito Auth](docs/fix-cognito-auth.md) - Troubleshooting Cognito authentication
+- [Test Auth](docs/test-auth.md) - Authentication testing guide
 
 ## 🛠️ Development
 
