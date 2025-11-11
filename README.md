@@ -1,12 +1,12 @@
-# 📚 Epic Library - AI-Powered Book Q&A System
+# 📚 Epic Library - AI-Powered Q&A System
 
-An intelligent web application that allows users to ask questions about uploaded books and receive context-aware answers using AWS services, vector embeddings, and large language models.
+An intelligent web application that allows users to ask questions about uploaded content and receive context-aware answers using AWS services, vector embeddings, and large language models.
 
 ## 🎯 Overview
 
 Epic Library is a full-stack AI-powered application that enables users to:
-- **Upload books** as text files or from GitHub repositories
-- **Ask questions** about any uploaded book
+- **Upload content** as text files or from GitHub repositories
+- **Ask questions** about any uploaded content
 - **Receive intelligent answers** powered by Amazon Bedrock AI models
 - **Search semantically** using vector embeddings for accurate context retrieval
 
@@ -15,12 +15,12 @@ The system uses advanced NLP techniques including hybrid search (semantic + keyw
 ## ✨ Key Features
 
 ### Core Functionality
-- 🤖 **AI-Powered Q&A**: Ask questions about any uploaded book and get intelligent, context-aware answers
-- 📖 **Multi-Book Support**: Upload and query multiple books simultaneously
+- 🤖 **AI-Powered Q&A**: Ask questions about any uploaded content and get intelligent, context-aware answers
+- 📖 **Multi-Content Support**: Upload and query multiple documents simultaneously
 - 🔍 **Hybrid Search**: Combines semantic vector search with keyword matching for better accuracy
 - 📝 **Content Filtering**: Automatic detection and filtering of inappropriate language
 - 🔐 **User Authentication**: AWS Cognito integration for secure user management
-- 📤 **Multiple Upload Methods**: Upload books via file upload or GitHub repository links
+- 📤 **Multiple Upload Methods**: Upload content via file upload or GitHub repository links
 
 ### Technical Features
 - ⚡ **Serverless Architecture**: Fully serverless using AWS Lambda
@@ -68,8 +68,8 @@ epic-web-app/
 ├── frontend/                    # React frontend application
 │   ├── src/
 │   │   ├── components/          # React components
-│   │   │   ├── BookQA.tsx      # Main Q&A interface
-│   │   │   ├── BookUpload.tsx  # File upload component
+│   │   │   ├── BookQA.tsx      # Main Q&A interface (works with all content types)
+│   │   │   ├── BookUpload.tsx  # File upload component (works with all content types)
 │   │   │   ├── RepoUpload.tsx  # GitHub repo upload
 │   │   │   ├── Auth.tsx        # Authentication UI
 │   │   │   └── ...
@@ -83,7 +83,7 @@ epic-web-app/
 │   ├── src/
 │   │   ├── query_handler.py    # Main Q&A Lambda function
 │   │   ├── upload_handler.py   # File upload Lambda
-│   │   ├── list_books.py       # List books Lambda
+│   │   ├── list_books.py       # List content Lambda
 │   │   ├── auth_middleware.py  # JWT validation
 │   │   └── utils/
 │   │       ├── vector_search.py    # Vector similarity search
@@ -136,7 +136,7 @@ cd ..
    - Update `frontend/src/config/cognito.ts` with your Cognito details
    - Set Lambda environment variables in AWS Console:
      - `DYNAMODB_TABLE`: Your DynamoDB table name
-     - `BOOKS_BUCKET`: Your S3 bucket name
+     - `BOOKS_BUCKET`: Your S3 bucket name (or `CONTENT_BUCKET`)
      - `BEDROCK_REGION`: AWS region (e.g., `us-east-1`)
 
 ### Development
@@ -161,12 +161,14 @@ aws lambda update-function-code --function-name epic-query-function --zip-file f
 https://<your-api-gateway-url>/dev
 ```
 
+**Note**: While the API uses "book" terminology in field names (for backward compatibility), it works with all content types including text files, repositories, and documentation.
+
 ### Endpoints
 
-#### 1. List Books
+#### 1. List Content
 **GET** `/query/books`
 
-Returns a list of all available books.
+Returns a list of all available content.
 
 **Response:**
 ```json
@@ -177,7 +179,7 @@ Returns a list of all available books.
       "filename": "Ramayana.txt",
       "lastModified": "2025-01-15T10:30:00Z",
       "size": 2328165,
-      "type": "uploaded_book"
+      "type": "uploaded_content"
     }
   ],
   "count": 1
@@ -187,12 +189,12 @@ Returns a list of all available books.
 #### 2. Ask Question
 **POST** `/query`
 
-Ask a question about a specific book.
+Ask a question about specific content.
 
 **Request Body:**
 ```json
 {
-  "question": "Who is the main character in this book?",
+  "question": "Who is the main character?",
   "book_title": "Ramayana"
 }
 ```
@@ -205,21 +207,21 @@ Ask a question about a specific book.
 }
 ```
 
-#### 3. Upload Book
+#### 3. Upload Content
 **POST** `/upload`
 
-Upload a new book file (requires authentication).
+Upload a new file (requires authentication).
 
 **Request:**
 - Content-Type: `application/json`
-- Body: `{ "filename": "book.txt", "file_content": "<base64-encoded-content>" }`
+- Body: `{ "filename": "document.txt", "file_content": "<base64-encoded-content>" }`
 
 **Response:**
 ```json
 {
   "message": "File uploaded successfully to S3",
-  "filename": "book.txt",
-  "s3_key": "book.txt"
+  "filename": "document.txt",
+  "s3_key": "document.txt"
 }
 ```
 
@@ -253,7 +255,7 @@ export const COGNITO_CONFIG = {
 
 Set these in your Lambda function configuration:
 
-- `DYNAMODB_TABLE`: DynamoDB table name (e.g., `book-embeddings-dev`)
+- `DYNAMODB_TABLE`: DynamoDB table name (e.g., `embeddings-dev` or `content-embeddings-dev`)
 - `BOOKS_BUCKET`: S3 bucket for raw text files (e.g., `epic-s3-bucket-ramayana`)
 - `BEDROCK_REGION`: AWS region for Bedrock (e.g., `us-east-1`)
 
