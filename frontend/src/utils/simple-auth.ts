@@ -306,6 +306,48 @@ export const confirmRegistration = async (email: string, code: string): Promise<
   });
 };
 
+// Forgot password - send OTP to email
+export const forgotPassword = async (email: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const cognitoUser = new CognitoUser({
+      Username: email,
+      Pool: userPool,
+    });
+
+    cognitoUser.forgotPassword({
+      onSuccess: (result) => {
+        console.log('Forgot password OTP sent successfully:', result);
+        resolve(result);
+      },
+      onFailure: (err) => {
+        console.error('Forgot password failed:', err);
+        reject(err);
+      },
+    });
+  });
+};
+
+// Confirm new password with OTP
+export const confirmNewPassword = async (email: string, code: string, newPassword: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const cognitoUser = new CognitoUser({
+      Username: email,
+      Pool: userPool,
+    });
+
+    cognitoUser.confirmPassword(code, newPassword, {
+      onSuccess: (result) => {
+        console.log('Password reset successful:', result);
+        resolve(result);
+      },
+      onFailure: (err) => {
+        console.error('Password reset failed:', err);
+        reject(err);
+      },
+    });
+  });
+};
+
 // Safe function to clear all authentication state without triggering errors
 export const safeClearAuth = (): void => {
   try {

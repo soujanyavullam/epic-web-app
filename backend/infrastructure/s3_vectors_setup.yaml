@@ -4,12 +4,12 @@ Description: 'S3 Vectors Infrastructure for Epic Library'
 Parameters:
   VectorBucketName:
     Type: String
-    Default: 'epic-vector-bucket'
+    Default: 'epic-s3-vectors-bucket'
     Description: 'Name for the S3 Vector bucket'
 
   VectorIndexName:
     Type: String
-    Default: 'book-embeddings-index'
+    Default: 'epic-book-embeddings-index'
     Description: 'Name for the vector index'
 
 Resources:
@@ -41,6 +41,13 @@ Resources:
         VectorConfiguration:
           Dimension: 1536
           MetricType: COSINE
+        MetadataConfiguration:
+          FilterableMetadata:
+            - book_title
+            - chunk_id
+            - chunk_number
+          NonFilterableMetadata:
+            - text
 
   # Lambda function to create vector index
   VectorIndexFunction:
@@ -64,9 +71,9 @@ Resources:
                       s3_vectors = boto3.client('s3vectors')
                       
                       response = s3_vectors.create_index(
-                          Bucket=event['ResourceProperties']['BucketName'],
-                          IndexName=event['ResourceProperties']['IndexName'],
-                          IndexConfiguration=event['ResourceProperties']['IndexConfiguration']
+                          vectorBucketName=event['ResourceProperties']['BucketName'],
+                          indexName=event['ResourceProperties']['IndexName'],
+                          indexConfiguration=event['ResourceProperties']['IndexConfiguration']
                       )
                       
                       cfnresponse.send(event, context, cfnresponse.SUCCESS, {
@@ -101,6 +108,8 @@ Resources:
                   - s3vectors:CreateIndex
                   - s3vectors:DeleteIndex
                   - s3vectors:DescribeIndex
+                  - s3vectors:GetIndex
+                  - s3vectors:ListIndexes
                 Resource: '*'
 
   # IAM Role for Lambda Functions (Updated with S3 Vectors permissions)

@@ -36,6 +36,16 @@ def create_vector_index():
                 'VectorConfiguration': {
                     'Dimension': 1536,  # Titan Embed Text v2 dimension
                     'MetricType': 'COSINE'
+                },
+                'MetadataConfiguration': {
+                    'FilterableMetadata': [
+                        'book_title',
+                        'chunk_id',
+                        'chunk_number'
+                    ],
+                    'NonFilterableMetadata': [
+                        'text'  # Large text content as non-filterable
+                    ]
                 }
             }
         )

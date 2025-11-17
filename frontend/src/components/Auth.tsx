@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { loginUser, registerUser, confirmRegistration, getCurrentUser, logout } from '../utils/simple-auth';
+import { loginUser, registerUser, confirmRegistration, forgotPassword, confirmNewPassword, getCurrentUser, logout } from '../utils/simple-auth';
 import './Auth.css';
 
 interface AuthProps {
@@ -9,10 +9,13 @@ interface AuthProps {
 const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -99,6 +102,21 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      await forgotPassword(email);
+      setError('');
+      setIsForgotPassword(true);
+      alert('Password reset OTP sent to your email. Please check your inbox and enter the code below.');
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerification = async () => {
     try {
       setLoading(true);
@@ -108,6 +126,35 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
       setIsVerifying(false);
       setIsLogin(true);
       alert('Email verified successfully! You can now login.');
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmNewPassword = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Validate passwords match
+      if (newPassword !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+      
+      // Validate password length
+      if (newPassword.length < 8) {
+        setError('Password must be at least 8 characters long');
+        return;
+      }
+      
+      await confirmNewPassword(email, verificationCode, newPassword);
+      setError('');
+      setIsLogin(true);
+      setPassword(''); // Clear the old password field
+      alert('Password reset successful! You can now login with your new password.');
     } catch (err) {
       throw err;
     } finally {
@@ -217,6 +264,82 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
     );
   }
 
+  if (isForgotPassword) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2>Reset Your Password</h2>
+          <p>Please enter the verification code sent to your email address:</p>
+          
+          <form onSubmit={(e) => { e.preventDefault(); handleConfirmNewPassword(); }} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="verificationCode">Verification Code</label>
+              <input
+                type="text"
+                id="verificationCode"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                required
+                placeholder="Enter verification code"
+                maxLength={6}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="newPassword">New Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                placeholder="Enter new password"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                placeholder="Confirm new password"
+              />
+            </div>
+            
+            {error && <div className="error-message">{error}</div>}
+            
+            <button 
+              type="submit" 
+              className="auth-button"
+              disabled={loading || !verificationCode.trim() || !newPassword.trim() || !confirmPassword.trim()}
+            >
+              {loading ? 'Resetting...' : 'Reset Password'}
+            </button>
+          </form>
+          
+          <div className="auth-toggle">
+            <p>
+              <button 
+                className="toggle-button"
+                onClick={() => {
+                  setIsForgotPassword(false);
+                  setIsLogin(true);
+                  setError('');
+                  setVerificationCode('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+              >
+                Back to Login
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -259,6 +382,21 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
               required
               placeholder="Enter your password"
             />
+            {isLogin && (
+              <button
+                type="button"
+                className="forgot-password-button"
+                onClick={() => {
+                  if (!email.trim()) {
+                    setError('Please enter your email address first');
+                    return;
+                  }
+                  handleForgotPassword();
+                }}
+              >
+                Forgot Password?
+              </button>
+            )}
           </div>
           
           {error && <div className="error-message">{error}</div>}
