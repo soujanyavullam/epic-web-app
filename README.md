@@ -92,7 +92,10 @@ epic-web-app/
 │   ├── infrastructure/         # CloudFormation templates
 │   └── requirements.txt
 │
-├── deployment/                 # Deployment scripts
+├── deployment/                 # Deployment scripts, configs, and infrastructure
+│   ├── scripts/               # Deployment scripts
+│   ├── config/                # Configuration files
+│   └── infrastructure/        # CloudFormation templates
 ├── docs/                       # Additional documentation
 ├── publications/               # Conference papers and presentations
 └── README.md                   # This file
@@ -129,7 +132,7 @@ pip install -r requirements.txt
 
 4. **Configure AWS Cognito** (for authentication)
 ```bash
-cd ..
+cd deployment/scripts
 ./setup-cognito.sh
 ```
 

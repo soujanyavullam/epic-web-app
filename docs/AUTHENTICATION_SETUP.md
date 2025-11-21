@@ -36,7 +36,8 @@ Your current architecture includes:
 ### 1. Run the Setup Script
 
 ```bash
-chmod +x setup-cognito.sh
+chmod +x deployment/scripts/setup-cognito.sh
+cd deployment/scripts
 ./setup-cognito.sh
 ```
 

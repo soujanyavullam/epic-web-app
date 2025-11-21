@@ -5,6 +5,7 @@
 ### 1. Run the Setup Script
 
 ```bash
+cd deployment/scripts
 ./setup-cognito.sh
 ```
 
